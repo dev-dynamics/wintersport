@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лыжные гонки</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .race-container {
+            width: 1000px;
+            height: 800px;
+            position: relative;
+            background: url('../pictures/race.png') no-repeat center;
+            background-size: cover;
+            border: 5px solid #333;
+        }
+
+        .track {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .skier {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: url('../pictures/ski.png') no-repeat center;
+            background-size: contain;
+            left: -40px; /* Начальная позиция за пределами карты */
+        }
+
+        /* Определяем путь движения для каждого лыжника */
+        @keyframes moveSkier1 {
+            0% { 
+                left: -40px; 
+                top: 50px;
+            }
+            25% { 
+                left: 70%; 
+                top: 180px;
+            }
+            50% { 
+                left: 20%; 
+                top: 400px;
+            }
+            75% { 
+                left: 90%; 
+                top: 600px;
+            }
+            100% { 
+                left: calc(100% - 40px); 
+                top: 750px;
+            }
+        }
+
+        @keyframes turnSkier1 {
+            0%, 24.99% { transform: rotateY(0deg); }
+            25%, 49.99% { transform: rotateY(180deg); }
+            50%, 74.99% { transform: rotateY(0deg); }
+            75%, 100% { transform: rotateY(0deg); }
+        }
+
+        @keyframes moveSkier2 {
+            0% { 
+                left: -40px; 
+                top: 50px;
+            }
+            25% { 
+                left: 65%; 
+                top: 180px;
+            }
+            50% { 
+                left: 25%; 
+                top: 420px;
+            }
+            75% { 
+                left: 85%; 
+                top: 620px;
+            }
+            100% { 
+                left: calc(100% - 40px); 
+                top: 730px;
+            }
+        }
+
+        @keyframes turnSkier2 {
+            0%, 24.99% { transform: rotateY(0deg); }
+            25%, 49.99% { transform: rotateY(180deg); }
+            50%, 60.99% { transform: rotateY(0deg); }
+            75%, 100% { transform: rotateY(0deg); }
+        }
+
+        @keyframes moveSkier3 {
+            0% { 
+                left: -40px; 
+                top: 10px;
+            }
+            25% { 
+                left: 60%; 
+                top: 200px;
+            }
+            50% { 
+                left: 30%; 
+                top: 440px;
+            }
+            75% { 
+                left: 80%; 
+                top: 640px;
+            }
+            100% { 
+                left: calc(100% - 40px); 
+                top: 710px;
+            }
+        }
+
+        @keyframes turnSkier3 {
+            0%, 24.99% { transform: rotateY(0deg); }
+            25%, 49.99% { transform: rotateY(180deg); }
+            50%, 74.99% { transform: rotateY(0deg); }
+            75%, 100% { transform: rotateY(0deg); }
+        }
+
+        @keyframes moveSkier4 {
+            0% { 
+                left: -40px; 
+                top: 0px;
+            }
+            25% { 
+                left: 55%; 
+                top: 200px;
+            }
+            50% { 
+                left: 35%; 
+                top: 460px;
+            }
+            75% { 
+                left: 75%; 
+                top: 660px;
+            }
+            100% { 
+                left: calc(100% - 40px); 
+                top: 690px;
+            }
+        }
+
+        @keyframes turnSkier4 {
+            0%, 24.99% { transform: rotateY(0deg); }
+            25%, 49.99% { transform: rotateY(180deg); }
+            50%, 74.99% { transform: rotateY(0deg); }
+            75%, 100% { transform: rotateY(0deg); }
+        }
+
+        /* Применяем анимации с forwards для сохранения конечного состояния */
+        .skier1 { 
+            animation: 
+                moveSkier1 8s linear forwards,
+                turnSkier1 8s steps(1) forwards;
+        }
+        .skier2 { 
+            animation: 
+                moveSkier2 8s linear forwards,
+                turnSkier2 8s steps(1) forwards;
+            animation-delay: 1s;
+        }
+        .skier3 { 
+            animation: 
+                moveSkier3 8s linear forwards,
+                turnSkier3 8s steps(1) forwards;
+            animation-delay: 2s;
+        }
+        .skier4 { 
+            animation: 
+                moveSkier4 8s linear forwards,
+                turnSkier4 8s steps(1) forwards;
+            animation-delay: 3s;
+        }
+
+        .start-label, .finish-label {
+            position: absolute;
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+
+        .start-label {
+            top: 30px;
+            left: 20px;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .finish-label {
+            bottom: 20px;
+            right: 40px;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #006CDC;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            opacity: 0.8;
+        }
+
+        /* Стили для сообщения о победе */
+        .victory-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            animation: showMessage 1s forwards;
+            animation-delay: 12s; /* Появление после финиша последнего лыжника */
+        }
+
+        .rainbow-text {
+            font-size: 36px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .rainbow-text span:nth-child(1) { color: #FF0000; }
+        .rainbow-text span:nth-child(2) { color: #FF7F00; }
+        .rainbow-text span:nth-child(3) { color: #e7e726; }
+        .rainbow-text span:nth-child(4) { color: #00FF00; }
+        .rainbow-text span:nth-child(5) { color: #0000FF; }
+        .rainbow-text span:nth-child(6) { color: #4B0082; }
+        .rainbow-text span:nth-child(7) { color: #9400D3; }
+        .rainbow-text span:nth-child(8) { color: #FF1493; }
+        .rainbow-text span:nth-child(9) { color: #FF4500; }
+        .rainbow-text span:nth-child(10) { color: #32CD32; }
+        .rainbow-text span:nth-child(11) { color: #FF69B4; }
+        .rainbow-text span:nth-child(12) { color: #4169E1; }
+        .rainbow-text span:nth-child(13) { color: #8B008B; }
+
+        @keyframes showMessage {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -30%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../main.html" class="back-button">Назад</a>
+    <div class="race-container">
+        <div class="start-label">Старт</div>
+        <div class="finish-label">Финиш</div>
+        <div class="skier skier1"></div>
+        <div class="skier skier2"></div>
+        <div class="skier skier3"></div>
+        <div class="skier skier4"></div>
+        <div class="victory-message">
+            <div class="rainbow-text">
+                <span>П</span>
+                <span>о</span>
+                <span>б</span>
+                <span>е</span>
+                <span>д</span>
+                <span>и</span>
+                <span>л</span>
+                <span>а</span>
+								<span> </span>
+								<span> </span>
+                <span>д</span>
+                <span>р</span>
+                <span>у</span>
+								<span>ж</span>
+                <span>б</span>
+                <span>а</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Демонстрация - Биатлон</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .biathlon-field {
+            width: 1000px;
+            height: 600px;
+            background-color: #fff;
+            border: 5px solid #333;
+            position: relative;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        /* Разделители дорожек */
+        .lane-divider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #ddd;
+        }
+
+        .lane-divider:nth-child(1) { left: 33.33%; }
+        .lane-divider:nth-child(2) { left: 66.66%; }
+
+        /* Красная линия */
+        .red-line {
+            position: absolute;
+            bottom: 200px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: red;
+            z-index: 1;
+        }
+
+        .red-line::after {
+            content: 'Линия стрельбы';
+            position: absolute;
+            right: 10px;
+            top: -25px;
+            font-size: 14px;
+            color: red;
+        }
+
+        .shooting-lane {
+            width: 200px;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .target-area {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        /* Подставка для мишеней */
+        .target-stand {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background: #666;
+            left: 60%;
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+
+        .target-stand::before,
+        .target-stand::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            width: 10px;
+            height: 40px;
+            background: #666;
+        }
+
+        .target-stand::before {
+            left: 20px;
+        }
+
+        .target-stand::after {
+            right: 20px;
+        }
+
+        .target-dots {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 10px;
+        }
+
+        .target-dot {
+            width: 15px;
+            height: 15px;
+            background-color: #000;
+            border-radius: 50%;
+            margin: 0 2px;
+        }
+
+        .shooter-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: auto;
+            position: relative;
+            bottom: 50px;
+        }
+
+        /* Отдельное позиционирование для счетчиков */
+        .score-dots {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            right: -50px; /* Отступ справа от биатлониста */
+            bottom: 0;
+        }
+
+        .score-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #000;
+            border-radius: 50%;
+            position: relative; /* Добавляем для изоляции анимации */
+            z-index: 1; /* Чтобы точки были поверх других элементов */
+        }
+
+        /* Обновляем анимацию для счетчиков */
+        @keyframes hitScore {
+            to {
+                background-color: #fff;
+                border: 2px solid #000;
+                transform: none; /* Убираем движение вверх */
+            }
+        }
+
+        /* Обновляем стили для стрелка */
+        .shooter {
+            width: 40px;
+            height: 80px;
+            position: relative;
+            z-index: 2; /* Чтобы был поверх счетчиков */
+        }
+
+        /* Тело стрелка */
+        .shooter::before {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            background: #006CDC;
+            bottom: 0;
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* Голова стрелка */
+        .shooter::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: #006CDC;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+        }
+
+        /* Изменение оружия на изображение */
+        .rifle {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            top: -20px;
+            left: -30%;
+            transform-origin: center;
+            transform: rotate(-90deg);
+            background: url('../pictures/weapon.png') no-repeat center;
+            background-size: contain;
+        }
+
+        /* Обновленная анимация выстрелов */
+        @keyframes shoot {
+            0% { 
+                transform: translateY(0) rotate(-90deg);
+            }
+            20% { 
+                transform: translateY(10%) rotate(-90deg);
+            }
+            40% { 
+                transform: translateY(0%) rotate(-90deg);
+            }
+            60% { 
+                transform: translateY(0%) rotate(-90deg);
+            }
+            80% { 
+                transform: translateY(0%) rotate(-90deg);
+            }
+            100% { 
+                transform: translateY(0%) rotate(-90deg);
+            }
+        }
+
+        /* Анимации для мишеней */
+        .target-dot.hit {
+            animation: hitTarget 5.0s forwards;
+        }
+
+        .score-dot.hit {
+            animation: hitScore 5.0s forwards;
+        }
+
+        @keyframes hitTarget {
+            to {
+                background-color: #fff;
+                border: 2px solid #000;
+            }
+        }
+
+        /* Анимации для каждой дорожки с обновленными параметрами */
+        .shooting-lane:nth-child(4) .rifle {
+            animation: shoot 0.5s ease-in-out 0.5s,
+                      shoot 0.5s ease-in-out 1s,
+                      shoot 0.5s ease-in-out 1.5s,
+                      shoot 0.5s ease-in-out 2s,
+                      shoot 0.5s ease-in-out 2.5s;
+        }
+
+        .shooting-lane:nth-child(5) .rifle {
+            animation: shoot 0.5s ease-in-out 3s,
+                      shoot 0.5s ease-in-out 3.5s,
+                      shoot 0.5s ease-in-out 4s,
+                      shoot 0.5s ease-in-out 4.5s,
+                      shoot 0.5s ease-in-out 5s;
+        }
+
+        .shooting-lane:nth-child(6) .rifle {
+            animation: shoot 0.5s ease-in-out 5.5s,
+                      shoot 0.5s ease-in-out 6s,
+                      shoot 0.5s ease-in-out 6.5s,
+                      shoot 0.5s ease-in-out 7s,
+                      shoot 0.5s ease-in-out 7.5s;
+        }
+
+        /* Анимации для мишеней в каждой дорожке */
+        .shooting-lane:nth-child(4) .target-dot:nth-child(1) { animation: hitTarget 0.3s forwards 0.5s; }
+        .shooting-lane:nth-child(4) .target-dot:nth-child(2) { animation: none; }
+        .shooting-lane:nth-child(4) .target-dot:nth-child(3) { animation: none; }
+        .shooting-lane:nth-child(4) .target-dot:nth-child(4) { animation: hitTarget 0.3s forwards 2s; }
+        .shooting-lane:nth-child(4) .target-dot:nth-child(5) { animation: hitTarget 0.3s forwards 2.5s; }
+
+        .shooting-lane:nth-child(5) .target-dot:nth-child(1) { animation: hitTarget 0.3s forwards 3s; }
+        .shooting-lane:nth-child(5) .target-dot:nth-child(2) { animation: hitTarget 0.3s forwards 3.5s; }
+        .shooting-lane:nth-child(5) .target-dot:nth-child(3) { animation: hitTarget 0.3s forwards 4s; }
+        .shooting-lane:nth-child(5) .target-dot:nth-child(4) { animation: hitTarget 0.3s forwards 4.5s; }
+        .shooting-lane:nth-child(5) .target-dot:nth-child(5) { animation: hitTarget 0.3s forwards 5s; }
+
+        .shooting-lane:nth-child(6) .target-dot:nth-child(1) { animation: hitTarget 0.3s forwards 5.5s; }
+        .shooting-lane:nth-child(6) .target-dot:nth-child(2) { animation: hitTarget 0.3s forwards 6s; }
+        .shooting-lane:nth-child(6) .target-dot:nth-child(3) { animation: hitTarget 0.3s forwards 6.5s; }
+        .shooting-lane:nth-child(6) .target-dot:nth-child(4) { animation: none; }
+        .shooting-lane:nth-child(6) .target-dot:nth-child(5) { animation: hitTarget 0.3s forwards 7.5s; }
+
+        /* Анимации для счетчиков в каждой дорожке */
+        .shooting-lane:nth-child(4) .score-dot:nth-child(1) { animation: hitScore 0.3s forwards 0.5s; }
+        .shooting-lane:nth-child(4) .score-dot:nth-child(2) { animation: none; }
+        .shooting-lane:nth-child(4) .score-dot:nth-child(3) { animation: none; }
+        .shooting-lane:nth-child(4) .score-dot:nth-child(4) { animation: hitScore 0.3s forwards 2s; }
+        .shooting-lane:nth-child(4) .score-dot:nth-child(5) { animation: hitScore 0.3s forwards 2.5s; }
+
+        .shooting-lane:nth-child(5) .score-dot:nth-child(1) { animation: hitScore 0.3s forwards 3s; }
+        .shooting-lane:nth-child(5) .score-dot:nth-child(2) { animation: hitScore 0.3s forwards 3.5s; }
+        .shooting-lane:nth-child(5) .score-dot:nth-child(3) { animation: hitScore 0.3s forwards 4s; }
+        .shooting-lane:nth-child(5) .score-dot:nth-child(4) { animation: hitScore 0.3s forwards 4.5s; }
+        .shooting-lane:nth-child(5) .score-dot:nth-child(5) { animation: hitScore 0.3s forwards 5s; }
+
+        .shooting-lane:nth-child(6) .score-dot:nth-child(1) { animation: hitScore 0.3s forwards 5.5s; }
+        .shooting-lane:nth-child(6) .score-dot:nth-child(2) { animation: hitScore 0.3s forwards 6s; }
+        .shooting-lane:nth-child(6) .score-dot:nth-child(3) { animation: hitScore 0.3s forwards 6.5s; }
+        .shooting-lane:nth-child(6) .score-dot:nth-child(4) { animation: none; }
+        .shooting-lane:nth-child(6) .score-dot:nth-child(5) { animation: hitScore 0.3s forwards 7.5s; }
+
+        /* Разные цвета для биатлонистов */
+        .shooting-lane:nth-child(4) .shooter::before,
+        .shooting-lane:nth-child(4) .shooter::after {
+            background: #006CDC;
+        }
+
+        .shooting-lane:nth-child(5) .shooter::before,
+        .shooting-lane:nth-child(5) .shooter::after {
+            background: #DC0000;
+        }
+
+        .shooting-lane:nth-child(6) .shooter::before,
+        .shooting-lane:nth-child(6) .shooter::after {
+            background: #00DC00;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #006CDC;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: opacity 0.3s;
+        }
+
+        .back-button:hover {
+            opacity: 0.8;
+        }
+
+        /* Стили для таблицы результатов */
+        .results-table {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            animation: showResults 1s forwards;
+            animation-delay: 8s;
+            z-index: 1000; /* Добавляем высокий z-index */
+            min-width: 300px;
+        }
+
+        .results-table h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .result-row {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f5f5f5;
+        }
+
+        .place-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .first-place .place-icon {
+            background: url('../pictures/1st-place-medal.svg') no-repeat center;
+            background-size: contain;
+        }
+
+        .second-place .place-icon {
+            background: url('../pictures/2nd-place-medal.svg') no-repeat center;
+            background-size: contain;
+        }
+
+        .third-place .place-icon {
+            background: url('../pictures/3rd-place-medal.svg') no-repeat center;
+            background-size: contain;
+        }
+
+        .player-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .player-name {
+            font-size: 18px;
+            color: #333;
+            flex-grow: 1;
+        }
+
+        @keyframes showResults {
+            from {
+                opacity: 0;
+                visibility: hidden;
+                transform: translate(-50%, -40%);
+            }
+            to {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../main.html" class="back-button">Назад</a>
+    <div class="biathlon-field">
+        <div class="lane-divider"></div>
+        <div class="lane-divider"></div>
+        <div class="red-line"></div>
+
+        <!-- Дорожка 1 -->
+        <div class="shooting-lane">
+            <div class="target-area">
+                <div class="target-stand"></div>
+                <div class="target-dots">
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                </div>
+            </div>
+            <div class="shooter-container">
+                <div class="shooter">
+                    <div class="rifle"></div>
+                </div>
+                <div class="score-dots">
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Дорожка 2 -->
+        <div class="shooting-lane">
+            <div class="target-area">
+                <div class="target-stand"></div>
+                <div class="target-dots">
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                </div>
+            </div>
+            <div class="shooter-container">
+                <div class="shooter">
+                    <div class="rifle"></div>
+                </div>
+                <div class="score-dots">
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Дорожка 3 -->
+        <div class="shooting-lane">
+            <div class="target-area">
+                <div class="target-stand"></div>
+                <div class="target-dots">
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                    <div class="target-dot"></div>
+                </div>
+            </div>
+            <div class="shooter-container">
+                <div class="shooter">
+                    <div class="rifle"></div>
+                </div>
+                <div class="score-dots">
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                    <div class="score-dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Добавляем таблицу результатов в HTML часть -->
+    <div class="results-table">
+        <h2>Результаты соревнования</h2>
+        <div class="result-row first-place">
+            <div class="place-icon"></div>
+            <div class="player-color" style="background: #DC0000;"></div>
+            <div class="player-name">Биатлонист 1</div>
+        </div>
+        <div class="result-row second-place">
+            <div class="place-icon"></div>
+            <div class="player-color" style="background: #00DC00;"></div>
+            <div class="player-name">Биатлонист 2</div>
+        </div>
+        <div class="result-row third-place">
+            <div class="place-icon"></div>
+            <div class="player-color" style="background: #006CDC;"></div>
+            <div class="player-name">Биатлонист 3</div>
+        </div>
+    </div>
+</body>
+</html> 
