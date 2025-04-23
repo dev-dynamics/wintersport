@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зимние виды спорта</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Добавляем плавную прокрутку */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Добавляем отступ сверху для карточек, чтобы они не перекрывались шапкой */
+        .card {
+            scroll-margin-top: 100px;
+        }
+
+        /* Стили для контейнера кнопок */
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .to-top-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #006CDC;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: opacity 0.3s;
+        }
+
+        .to-top-button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <header class="header" id="top">
+        <div class="header-content">
+            <div class="logo">
+                <img src="Logo.svg" alt="Логотип">
+            </div>
+            <nav class="nav">
+                <a href="#hockey">Хоккей</a>
+                <a href="#biathlon">Биатлон</a>
+                <a href="#skiing">Лыжные гонки</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h1 class="title">
+            <img src="snowflake.svg" alt="Снежинка" class="snowflake">
+            Зимние виды спорта
+            <img src="snowflake.svg" alt="Снежинка" class="snowflake">
+        </h1>
+
+        <div class="card" id="hockey">
+            <div class="card-content">
+                <div class="card-left">
+                    <h2 class="card-title">1. Хоккей</h2>
+                    <p class="card-text">
+                        Хокке́й с ша́йбой — командная спортивная игра на льду, заключающаяся в противоборстве двух команд на коньках, которые, передавая шайбу клюшками, стремятся забросить её наибольшее количество раз в ворота соперника и не пропустить в свои. Игра является олимпийским видом спорта.
+                    </p>
+                    <div class="buttons-container">
+                        <a href="hockey.html" class="demo-button">Демонстрация</a>
+                        <a href="#top" class="to-top-button">В начало</a>
+                    </div>
+                </div>
+                <div class="card-right">
+                    <img src="Hockey.png" alt="Хоккеист" class="card-image">
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="biathlon">
+            <div class="card-content">
+                <div class="card-left">
+                    <h2 class="card-title">2. Биатлон</h2>
+                    <p class="card-text">
+                        Биатло́н — зимний олимпийский вид спорта, сочетающий лыжные гонки со стрельбой из винтовки. C 1994 года официальные международные соревнования по биатлону, включая Кубок мира и чемпионаты мира, проходят под эгидой Международного союза биатлонистов.
+                    </p>
+										<div class="buttons-container">
+											<a href="biathlon.html" class="demo-button">Демонстрация</a>
+											<a href="#top" class="to-top-button">В начало</a>
+										</div>
+                </div>
+                <div class="card-right">
+                    <img src="Biatlon.png" alt="Биатлонист" class="card-image">
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="skiing">
+            <div class="card-content">
+                <div class="card-left">
+                    <h2 class="card-title">3. Лыжные гонки</h2>
+                    <p class="card-text">
+                        Лы́жные гонки — циклический зимний вид спорта, в котором соревнуются по времени прохождения дистанции по специально подготовленной снежной трассе с использованием беговых лыж и лыжных палок. Официальные соревнования проводят на дистанциях длиной от 800 м до 70 км.
+                    </p>
+                    <div class="buttons-container">
+											<a href="skiing.html" class="demo-button">Демонстрация</a>
+											<a href="#top" class="to-top-button">В начало</a>
+										</div>
+                </div>
+                <div class="card-right">
+                    <img src="Skirace.png" alt="Лыжник" class="card-image">
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
